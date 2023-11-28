@@ -134,10 +134,7 @@ export default {
                     })
                     .catch(error => {
                         console.error('新規请求失败:', error);
-                        this.$message({
-                            type: 'error',
-                            message: '新規请求失败，请重试'
-                        });
+                     
                     });
             }).catch(() => {});
         },
@@ -185,17 +182,17 @@ export default {
                         if (res.data.code === 200) {
                             this.$message({
                                 type: 'success',
-                                message: '编辑成功'
+                                message: '編集成功'
                             });
                             this.billsInit();
                         }
                     })
                     .catch(error => {
                         
-                        console.error('编辑请求失败:', error);
+                        console.error('編集失败:', error);
                         this.$message({
                             type: 'error',
-                            message: '编辑请求失败，请重试'
+                           
                         });
                     });
             }).catch(() => {

@@ -23,15 +23,19 @@
                 </el-form-item>
                 <el-form-item label="ユーザー権限">
                     <el-select v-model="user.rolesno" placeholder="権限種類を選択してください" style="width: 100%;">
-                        <!-- <el-option label="操作者" value="1"></el-option>
+                        <el-option label="操作者" value="1"></el-option>
                         <el-option label="閲覧者" value="2"></el-option>
                         <el-option label="管理者" value="3"></el-option>
-                        <el-option label="システム管理者" value="4"></el-option> -->
-                        <el-option v-for="role in roles" :key="role.no" :label="role.roleName" 
-                                        :value="role.no">
-                        </el-option>
+                        <el-option label="システム管理者" value="4"></el-option>
                     </el-select>
                 </el-form-item>
+                <!-- 多选框 -->
+
+                <el-checkbox-group v-model="checkList">
+                    <el-checkbox v-for="role in roles" :key="role.no" :label="role.no">{{ role.roleName }}</el-checkbox>
+                </el-checkbox-group>
+
+                <!--  -->
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="CreateUserVisible = false">キャンセル</el-button>
@@ -74,14 +78,20 @@
                                     <el-option v-for="role in roles" :key="role.no" :label="role.roleName"
                                         :value="role.no">
                                     </el-option>
-                                    <!--  -->
-
                                     <!-- <el-option key="1" label="操作者" value="1"></el-option>
                                     <el-option key="2" label="閲覧者" value="2"></el-option>
                                     <el-option key="3" label="管理者" value="3"></el-option>
                                     <el-option key="4" label="システム管理者" value="4"></el-option> -->
                                 </el-select>
                             </el-form-item>
+                            <!-- 用户阅览（检索）权限多选 -->
+                            <!--  -->
+
+                            <el-checkbox-group v-model="checkList">
+                                <el-checkbox v-for="role in roles" :key="role.no" :label="role.no">{{ role.roleName }}</el-checkbox>
+                            </el-checkbox-group>
+
+                            <!--  -->
                         </el-form>
                         <div slot="footer" class="dialog-footer">
                             <el-button @click="editUserVisible = false">キャンセル</el-button>
@@ -123,7 +133,8 @@
                     { no: 2, roleName: '閲覧者' },
                     { no: 3, roleName: '管理者' },
                     { no: 4, roleName: 'システム管理者' }
-                ]
+                ],
+                checkList:[],
             }
         },
         computed: {
@@ -140,26 +151,10 @@
         methods: {
             // ユーザー編集，user对象的密码可能为空，如果为空就不update密码字段
             editUser() {
-                const requestData = {
-                    
-                    user: this.user,
-                    updateuserid: sessionStorage.getItem('userid')
-                };
-                // this.$http
-                //     .post("/user/editUser", this.user)
-                //     .then(res => {
-                //         if (res.data.code == 200) {
-                //             this.editUserVisible = false;
-                //             this.$message({
-                //                 message: 'ユーザー編集成功',
-                //                 type: 'success'
-                //             });
-                //             this.init();
-                //         }
-                //     })
-                this.$http.post("/user/editUser", requestData)
+                this.$http
+                    .post("/user/editUser", this.user)
                     .then(res => {
-                        if (res.data.code === 200) {
+                        if (res.data.code == 200) {
                             this.editUserVisible = false;
                             this.$message({
                                 message: 'ユーザー編集成功',
@@ -167,7 +162,7 @@
                             });
                             this.init();
                         }
-                    });
+                    })
                 this.editUserVisible = false;
             },
             editUserbt(user) {

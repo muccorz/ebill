@@ -34,7 +34,8 @@
         <el-button type="primary" @click="addCustomer" :disabled="addCustomerBt">追 加</el-button>
       </div>
     </el-dialog> -->
-    <el-dialog title="取引先新規" :visible.sync="dialogFormVisible" @closed="customerInit">
+    <!-- <el-dialog title="取引先新規" :visible.sync="dialogFormVisible" @closed="customerInit"> -->
+    <el-dialog :title="isEditing ? '取引先編集' : '取引先新規'" :visible.sync="dialogFormVisible" @closed="customerInit">
     <el-form :model="customer">
         <el-form-item label="取引先">
         <span class="text-danger" style="font-size: 12px;" v-if="flag1">取引先を入力してください</span>
@@ -131,24 +132,7 @@
                     this.flag1 = false
                 }
             },
-            // deleteCustomer(customerno) {
-            //     this.$confirm('これで取引先は完全に削除されます，続きますが？', '取引先を消しますが？', {
-            //         confirmButtonText: '続く',
-            //         cancelButtonText: 'キャンセル',
-            //         type: 'warning'
-            //     }).then(() => {
-            //         this.$http.get('/category/deleteCustomer/' + customerno)
-            //             .then(res => {
-            //                 if (res.data.code === 200) {
-            //                     this.$message({
-            //                         type: 'success',
-            //                         message: '削除成功'
-            //                     });
-            //                     this.customerInit()
-            //                 }
-            //             })
-            //     }).catch(() => { });
-            // },
+ 
 
             deleteCustomer(customerno) {
                 this.$confirm('これで取引先は完全に削除されます，続きますが？', '取引先を消しますが？', {
@@ -181,42 +165,8 @@
                 }).catch(() => { });
             },
 
-
-            // addCustomer() {
-            //     let flag1 = false;
-            //     this.customerTypes.forEach(customer => {
-            //         if (this.customer.customerType === customer.customerType) {
-            //             flag1 = true
-            //         }
-            //     });
-            //     if (!flag1) {
-            //         this.$confirm('入力した取引先は今のない取引先です。', '取引先を新規しますか？', {
-            //             confirmButtonText: '新規',
-            //             cancelButtonText: 'キャンセル',
-            //             type: 'warning'
-            //         }).then(() => {
-            //             this.addCustomerSend()
-            //         })
-            //     } else {
-            //         this.addCustomerSend()
-            //     }
-            // },
-            // addCustomerSend() {
-            //     this.$http.post('/category/addCustomer', this.customer)
-            //         .then(res => {
-            //             if (res.data.code === 200) {
-            //                 this.$message({
-            //                     type: 'success',
-            //                     message: '新規成功'
-            //                 });
-            //                 this.costomersInit()
-            //                 this.costomerInit()
-            //             }
-            //         })
-            //     this.dialogFormVisible = false
-            // },
-
             addCustomer() {
+                this.isEditing = false; // 重置为新增状态
                 let flag1 = false;
                 this.customerTypes.forEach(customer => {
                     if (this.customer.customerType === customer.customerType) {
@@ -268,6 +218,7 @@
                         });
                     });
                 this.dialogFormVisible = false;
+                
             },
             
             // 判断
@@ -275,7 +226,9 @@
                 if (this.isEditing) {
                 this.sendEditCustomer(); // 调用更新的方法
                 } else {
+                
                 this.addCustomerSend(); // 调用添加的方法
+                this.isEditing = false;
                 }
             },
 
@@ -344,14 +297,9 @@
             },
             customerInit() {
                 this.customer.customer = '',
-                    this.customer.customerType = ''
+                this.customer.customerType = ''
             },
-            // billsInit() {
-            //     this.$http.get('/category/getBillTypes')
-            //         .then(res => {
-            //             this.billTypes = res.data.data
-            //         })
-            // },
+
 
         }
     }
