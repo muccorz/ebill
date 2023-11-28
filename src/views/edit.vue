@@ -122,15 +122,7 @@
                     return this.bill.billTypeno == '' || this.bill.customerno == '' || this.bill.transactionAmount == '' || this.transactionymdStr == '' || this.bill.imageUrl == '' || this.bill.remark == '';
                 } else {
                     // 新建
-                    
-                    console.log(
-                        this.bill.billTypeno , "  ,",
-                        this.bill.customerno ,"  ,",
-                        this.bill.transactionAmount,"  ,",
-                        this.transactionymdStr ,"  ,",
-                        this.bill.imageUrl ,"  ,",
-                        // 滚动条的默认值非空
-                    )
+          
                     return this.bill.billTypeno == '' || this.bill.customerno == '' || this.bill.transactionAmount == '' || this.transactionymdStr == '' || this.bill.imageUrl == '';
                 }
             }
@@ -171,19 +163,8 @@
             cancel() {
                 this.$router.push('/search');
             },
-            handleAvatarSuccess(response) {
-                console.log('handleAvatarSuccess', response);
 
-                // 从 response 中获取响应数据
-                const responseData = response.data;
-                console.log('responseData: ',responseData)
-                // 使用 responseData 中的数据来查找匹配的文件
-            
-                this.bill.imageUrl = responseData.imageUrl;
-                console.log('this.bill.imageUrl: ',this.bill.imageUrl)
-            },
-
-
+        
             //金額のチェック
             checkAmountFrom() {
                 if (!/^-?\d+$/.test(this.bill.transactionAmount) && this.bill.transactionAmount != '') {
@@ -246,10 +227,9 @@
                 return url.toLowerCase().endsWith('.pdf');
             },
             beforeUpload(file) {
-                file.imageUrl = '';
                 const maxFileSize = 12; // 最大文件大小（MB）
                 const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-                
+
                 const isAllowedType = allowedTypes.includes(file.type);
                 const isLtMaxFileSize = file.size / 1024 / 1024 <= maxFileSize;
 
@@ -263,25 +243,22 @@
                     return false;
                 }
 
-                return true; // 允许上传
+                // 允许上传，并将文件添加到 fileList
+                this.fileList.push(file);
+
+                return true;
             },
-
-
             handleRemove(file, fileList) {
-                console.log('delete里的： ',this.bill.imageUrl);
-
-                // 保存要删除的文件对象
-                this.deletingFile = file;
 
                 // 向后端发送 POST 请求，删除文件
-                this.$http.post('/bill/deleteTempFile', { imageUrl: this.bill.imageUrl })
+                this.$http.post('/bill/deleteTempFile', { imageUrl: file.response.data.imageUrl })
                 .then(response => {
                     // 请求成功后，继续执行默认的移除操作
                     const index = fileList.indexOf(file);
                     if (index !== -1) {
-                    fileList.splice(index, 1);
+                        fileList.splice(index, 1);
                     }
-                    
+
                     // 请求成功后清空 deletingFile
                     this.deletingFile = null;
                 })
@@ -294,6 +271,15 @@
                 });
             },
 
+            handleAvatarSuccess(response) {
+                console.log('handleAvatarSuccess', response);
+                console.log('fileList:', this.fileList);
+
+                // 从 response 中获取响应数据
+                const responseData = response.data;
+
+                this.fileList.push(response.data.imageUrl);
+            },
             handlePreview(file) {
                 console.log(file);
             },
