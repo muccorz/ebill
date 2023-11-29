@@ -1,28 +1,11 @@
 <template lang="">
     <div>
         <div style="flex-direction: row; height: 80vh; display: flex;">
-            <el-upload
-                style="margin-bottom:20px"
-                class="avatar-uploader"
-                :action="getUploadUrl()"
-                :before-upload="beforeUpload"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
-                :before-remove="beforeRemove"
-                :on-success="handleAvatarSuccess"
-                multiple
-                :limit="5"
-                :on-exceed="handleExceed"
-                :file-list="fileList">
-                <el-button size="small" type="primary">点击上传</el-button>
-                <div slot="tip" class="el-upload__tip"></div>
-         
-            </el-upload>
+       
             <div style="width: 45%; margin-top: 13vh;">
 
                 <el-upload multiple :limit="5" style="margin-bottom:20px" class="avatar-uploader" action="http://192.168.11.9:8082/bill/updateFile" :show-file-list="false"
                 :on-success="handleAvatarSuccess" >
-                <el-button size="small" type="primary">アップロードファイル</el-button>
                
                 <div v-if="bill.imageUrl">
                    
@@ -70,6 +53,23 @@
                     :disabled="setCreateBt">{{createBtText}}</el-button>
                 <el-button size="medium" type="warning" @click="cancel">キャンセル</el-button>
             </div>
+            <el-upload
+                style="display: flex; justify-content: center; margin-bottom: 20px;"
+                class="avatar-uploader"
+                :action="getUploadUrl()"
+                :before-upload="beforeUpload"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                :before-remove="beforeRemove"
+                :on-success="handleAvatarSuccess"
+                multiple
+                :limit="5"
+                :on-exceed="handleExceed"
+                :file-list="fileList">
+                <el-button size="small" type="primary">点击上传</el-button>
+                <div slot="tip" class="el-upload__tip"></div>
+         
+            </el-upload>
         </div>
     </div>
 </template>

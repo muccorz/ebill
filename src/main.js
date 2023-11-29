@@ -9,6 +9,7 @@ import router from './router'
 import request from './utils/axios'
 
 
+
 Vue.prototype.$http = request
 Vue.config.productionTip = false
 Vue.use(ElementUI);
