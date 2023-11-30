@@ -8,11 +8,11 @@
                 :on-success="handleAvatarSuccess" >
                
                 <div v-if="bill.imageUrl">
-                   
-                    <embed v-if="isPDF(bill.imageUrl)" :src="bill.imageUrl" type="application/pdf" width="48%" height="80%" style="position: absolute; top: 10%; left: 51%;">
-              
+                    <!-- isPDF(bill.imageUrl) -->
+                    <embed v-if="false" :src="bill.imageUrl" type="application/pdf" width="48%" height="80%" style="position: absolute; top: 10%; left: 51%;">
+                    <!-- !isPDF(bill.imageUrl) -->
                     <div  style="width: 40%; height: 80%; position: absolute; top: 10%; left: 55%; border-radius: 5px; display: flex; justify-content: center; align-items: center;">
-                        <img v-if="!isPDF(bill.imageUrl)"  :src="bill.imageUrl" style="max-width: 100%; max-height: 100%;">
+                        <img v-if="true"  :src="bill.imageUrl" style="max-width: 100%; max-height: 100%;">
                     </div>
                 </div>
               </el-upload>
@@ -100,14 +100,15 @@
 
                     // billType: '',
                     // customer: '',
-                    
+                    // receipt_issuance: false,
                     remark: '',
                     transactionAmount: '',
                     // transactionymdStr: '',
                     transactionymd: null,
-                    imageUrl: '',
+                    imageUrls: [],
                 },
                 fileList: [],
+                updateFileList:[],
                 // updateuserid:'',暂时没用
                 deletingFile: null,
 
@@ -131,8 +132,10 @@
             
             create() {
                 this.bill.updateuserid = sessionStorage.getItem('userid');
-                // this.bill.billno = sessionStorage.getItem("billno");
                 this.bill.transactionymd = new Date(this.transactionymdStr)
+                this.bill.imageUrls=this.updateFileList
+
+        
 
                 if (this.bill.billno != null) {
                     this.$http.post('/bill/editBill', this.bill)
@@ -146,9 +149,9 @@
                             }
                         })
                 } else {
-                    console.log("this.bill[0]",this.bill)
+                    // console.log("this.bill",this.bill)
+                    // this.bill.imageUrls = []
                     this.$http.post('/bill/createBill', this.bill)
-                    
                         .then(res => {
                             if (res.data.code == 200) {
                                 this.$message({
@@ -215,7 +218,7 @@
                     this.bill.transactionymd = new Date(this.transactionymdStr);
                     this.bill.updateuserid = '';
                     this.bill.updateymd = '';
-                    this.bill.imageUrl = '';
+                    this.bill.imageUrls = [];
                     this.rewriteFlag = false;
                     this.remarkFlag = true;
                     this.createBtText = '作 成';
@@ -243,7 +246,6 @@
                     return false;
                 }
 
-                // 允许上传，并将文件添加到 fileList
                 this.fileList.push(file);
 
                 return true;
@@ -258,7 +260,10 @@
                     if (index !== -1) {
                         fileList.splice(index, 1);
                     }
-
+                    //删除updateFileList里的值
+                    this.updateFileList = this.updateFileList.filter(item => item !== file.response.data.imageUrl);
+                    // [...fileList]数组浅拷贝
+                    this.fileList = [...fileList];
                     // 请求成功后清空 deletingFile
                     this.deletingFile = null;
                 })
@@ -273,12 +278,8 @@
 
             handleAvatarSuccess(response) {
                 console.log('handleAvatarSuccess', response);
-                console.log('fileList:', this.fileList);
 
-                // 从 response 中获取响应数据
-                const responseData = response.data;
-
-                this.fileList.push(response.data.imageUrl);
+                this.updateFileList.push(response.data.imageUrl);
             },
             handlePreview(file) {
                 console.log(file);
@@ -289,6 +290,7 @@
             },
            
             beforeRemove(file, fileList) {
+                
                 return this.$confirm(`确定移除 ${ file.name }？`);
             },
             getUploadUrl() {

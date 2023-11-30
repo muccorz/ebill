@@ -99,38 +99,43 @@
         <!-- 帳票詳細drawer -->
 
         <el-drawer title="履歴" :visible.sync="drawerflag" size="80%" @closed="clearBill">
-            <div style="margin: 30px 100px; " class="d-flex">
-                <div style="width: 40%;">
-                    <el-form ref="form" :model="bill" label-width="120px" :disabled="true">
+            <div style="margin: 30px 100px; display: flex; justify-content: space-around;" class="d-flex" >
+                <div style="width: 40%;flex: 1;padding-right: 4vw; ">
+                    <el-form ref="form" :model="bill" label-width="120px" :disabled="true" >
                         <el-form-item label="帳票No">
                             <span style="font-size: 16px;">{{bill.billno}}</span>
                         </el-form-item>
                         <!-- 格式约束 -->
                         <el-form-item label="取引年月日">
-                        <el-input :value="bill.transactionymd | formatDate" style="width: 85%;"></el-input>
+                            <el-input :value="bill.transactionymd | formatDate"></el-input>
                         </el-form-item>
 
-                        <el-form-item label="取引金額">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <el-input v-model="bill.transactionAmount" style="width: 85%;"></el-input>
+                        <el-form-item label="取引金額">
+                            <el-input v-model="bill.transactionAmount"></el-input>
                         </el-form-item>
-                        <el-form-item label="取引先">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <el-input v-model="bill.customer" style="width: 85%;"></el-input>
+
+                        <el-form-item label="取引先">
+                            <el-input v-model="bill.customer"></el-input>
                         </el-form-item>
-                        <el-form-item label="帳票種類">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <el-input v-model="bill.billType" style="width: 85%;"></el-input>
+
+                        <el-form-item label="帳票種類">
+                            <el-input v-model="bill.billType"></el-input>
                         </el-form-item>
-                        <el-form-item label="訂正備考">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <el-input type="textarea" :rows="3" v-model="bill.remark" style="width: 85%;"></el-input>
+
+                        <el-form-item label="訂正備考">
+                            <el-input type="textarea" :rows="3" v-model="bill.remark"></el-input>
                         </el-form-item>
+
                         <!-- 时间约束 -->
                         <el-form-item label="登録日時">
-                        <el-input :value="$options.filters.formatDateTime(bill.updateymd)" style="width: 85%;" disabled></el-input>
+                            <el-input :value="$options.filters.formatDateTime(bill.updateymd)" disabled></el-input>
                         </el-form-item>
 
-                        <el-form-item label="登録ユーザー">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <el-input v-model="bill.updateUsername" style="width: 85%;"></el-input>
+                        <el-form-item label="登録ユーザー">
+                            <el-input v-model="bill.updateUsername"></el-input>
                         </el-form-item>
                     </el-form>
+
                     <el-button size="medium" type="primary" @click="edit" :disabled="!editBt" v-if="applyEditPermissonsBt">訂正</el-button>
                     <el-button size="medium" type="primary" @click="agree" :disabled="!agreeBt " v-if="editPermissonsBt">承認</el-button>
                     <el-button size="medium" type="danger" @click="disagree"
@@ -142,16 +147,20 @@
                 </div>
                 <!-- <embed :src="bill.imageUrl" type="application/pdf" width="50%" height="70%"
                     style="position: absolute; top: 10%; right: 5%;"> -->
-                    <div v-if="bill.imageUrl">
+                    <div v-if="bill.imageUrl" style="flex: 1; ">
                         <!-- 这边是查看展示的 -->
-                        <!-- 如果是 PDF 文件 -->
-                        <embed v-if="isPDF(bill.imageUrl)" :src="bill.imageUrl" type="application/pdf" width="40%" height="70%" style="position: absolute; top: 10%; left: 51%;">
-                        <!-- 如果是普通图片 -->
-                        <!-- <img  v-else :src="bill.imageUrl" alt="上传预览" style="max-width: 40vw; max-height: 70vh; "> -->
-                        <div  style="width: 40%; height: 60%; position: absolute; top: 15%; left: 55%; border-radius: 5px; display: flex; justify-content: center; align-items: center;">
-                            <img v-if="!isPDF(bill.imageUrl)"  :src="bill.imageUrl" style="max-width: 100%; max-height: 100%;">
+                        <div style="flex: 1; ">
+                            <!-- 右侧的图片或 PDF 阅读器 -->
+                            <div v-if="bill.imageUrl" style="max-width: 30vw; height: 60vh; border-radius: 5px; display: flex; justify-content: center; align-items: center;">
+                                <!-- 如果是 PDF 文件 -->
+                                <embed v-if="isPDF(bill.imageUrl)" :src="bill.imageUrl" type="application/pdf" width="100%" height="100%" style="border: none;">
+                                <!-- 如果是普通图片 -->
+                                <div v-if="!isPDF(bill.imageUrl)">
+                                    <el-image :src="bill.imageUrl" :fit="contain" style="max-width: 25vw; max-height: 60vh;"></el-image>
+                                </div>
+                            </div>
                         </div>
-
+                
                     </div>
                 <!-- <el-upload class="avatar-uploader" action="http://127.0.0.1:8081" :show-file-list="false"
                     :on-error="handleAvatarSuccess"> -->
@@ -554,8 +563,7 @@
                 });
             },
             //検索ボタン
-            search() {
-                
+            search() {                
                 const dateFrom = new Date(this.condition.transactionDateFrom);
                 const dateTo = new Date(this.condition.transactionDateTo);
               if (dateFrom > dateTo) {
@@ -864,7 +872,6 @@
         border-radius: 6px;
         cursor: pointer;
         position: relative;
-        overflow: hidden;
     }
 
     .avatar-uploader .el-upload:hover {
