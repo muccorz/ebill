@@ -11,7 +11,7 @@
                     <el-form-item label="帳票状態">
                         <el-select v-model="condition.searchManage" filterable placeholder="入力又は選択">
                             <el-option v-for="searchManage in searchManages" :key="searchManage.conditionJapanese"
-                            :label="searchManage.conditionJapanese" :value="searchManage.conditionJapanese">
+                            :label="searchManage.conditionJapanese" :value="searchManage.searchno">
                             </el-option>
                         </el-select>
                     </el-form-item><br>
@@ -63,9 +63,9 @@
                 <el-button type="primary" @click="search">検 索</el-button>
                 <el-button type="warning" @click="clear">クリア</el-button>
                 <br>
-                <el-button type="primary" @click="onSubmit" v-if="reviewBt">承認待ち</el-button>
-                <el-button type="primary" @click="getEditWaitBill" v-if="getEditWaitBillBt">改修処理中</el-button>
-                <br>
+                <!-- <el-button type="primary" @click="onSubmit" v-if="reviewBt">承認待ち</el-button>
+                <el-button type="primary" @click="getEditWaitBill" v-if="getEditWaitBillBt">改修処理中</el-button> -->
+               
                 <el-button type="primary" @click="download" v-if="downloadBt" :disabled="exportBt">エクスポート</el-button>
             </el-col>
         </el-row>
@@ -145,27 +145,23 @@
                     <el-button size="medium" type="warning" @click="applyEditPermissons" :disabled="!applyPermission"
                         v-if="applyEditPermissonsBt&&rolesno1Bt">訂正権限を申請</el-button>
                 </div>
-                <!-- <embed :src="bill.imageUrl" type="application/pdf" width="50%" height="70%"
-                    style="position: absolute; top: 10%; right: 5%;"> -->
-                    <div v-if="bill.imageUrl" style="flex: 1; ">
-                        <!-- 这边是查看展示的 -->
-                        <div style="flex: 1; ">
-                            <!-- 右侧的图片或 PDF 阅读器 -->
-                            <div v-if="bill.imageUrl" style="max-width: 30vw; height: 60vh; border-radius: 5px; display: flex; justify-content: center; align-items: center;">
-                                <!-- 如果是 PDF 文件 -->
-                                <embed v-if="isPDF(bill.imageUrl)" :src="bill.imageUrl" type="application/pdf" width="100%" height="100%" style="border: none;">
-                                <!-- 如果是普通图片 -->
-                                <div v-if="!isPDF(bill.imageUrl)">
-                                    <el-image :src="bill.imageUrl" :fit="contain" style="max-width: 25vw; max-height: 60vh;"></el-image>
-                                </div>
+        
+                <div v-if="bill.imageUrl" style="flex: 1; ">
+                    <!-- 这边是查看展示的 -->
+                    <div style="flex: 1; ">
+                        <!-- 右侧的图片或 PDF 阅读器 -->
+                        <div v-if="bill.imageUrl" style="max-width: 30vw; height: 60vh; border-radius: 5px; display: flex; justify-content: center; align-items: center;">
+                            <!-- 如果是 PDF 文件 -->
+                            <embed v-if="isPDF(bill.imageUrl)" :src="bill.imageUrl" type="application/pdf" width="100%" height="100%" style="border: none;">
+                            <!-- 如果是普通图片 -->
+                            <div v-if="!isPDF(bill.imageUrl)">
+                                <el-image :src="bill.imageUrl" :fit="contain" style="max-width: 25vw;"></el-image>
                             </div>
                         </div>
-                
                     </div>
-                <!-- <el-upload class="avatar-uploader" action="http://127.0.0.1:8081" :show-file-list="false"
-                    :on-error="handleAvatarSuccess"> -->
-                <!-- <i v-else class="el-icon-plus avatar-uploader-icon"></i> -->
-                <!-- </el-upload> -->
+            
+                </div>
+         
             </div>
             <el-table :data="Logs" :border="true" style="width: 80%;margin-top: 4%;margin-left: 3%;">
                 <el-table-column prop="transactionymd" label="取引年月日">
@@ -588,10 +584,23 @@
                 this.onSubmitFlag = false;
                 this.getApplyEditPermissonsFlag = false;
                 this.currentPage = 1;
-                this.$http.post('/bill/conditionSearch', {
-                    currentPage: this.currentPage,
-                    pagesize: this.pagesize,
-                    condition: this.condition
+                this.$http.post('/bill/conditionSearch', {              
+                    // conditon对象拆了拆了，散装发
+                    // condition: this.condition
+                    transactionDateFrom: this.condition.transactionDateFrom,
+                    transactionDateTo: this.condition.transactionDateTo,
+                    transactionAmountFrom: this.condition.transactionAmountFrom,
+                    transactionAmountTo: this.condition.transactionAmountTo,
+                    customerno: this.condition.customerno,
+                    billTypeno: this.condition.billTypeno,
+                    updateuserid: this.condition.updateuserid,
+                    reviewStatus: this.condition.searchManage,
+
+                    currentPage:this.currentPage,
+                    pagesize:this.pagesize,
+                    // 这俩排序在哪用的啊，有缘再看吧
+                    prop:'',
+                    order:'',
                 }).then(res => {
                     if (res.data.code == 200) {
                         this.billTableData = res.data.data;
@@ -756,7 +765,7 @@
             // 下拉菜单读取 searchManage
             loadsearchManage() {
                 this.$http.get('/bill/getSearchmanage/'+sessionStorage.getItem('userid')).then(res => {
-                    console.log(sessionStorage.getItem('userid'))
+                    // console.log(sessionStorage.getItem('userid'))
                     if (res.data.code == 200) {
                         this.searchManages = res.data.data;
                     }
@@ -854,7 +863,7 @@
 
 <style scoped>
     .el-table :deep() .cell {
-        /* overflow: hidden; */
+       
         /* text-overflow: ellipsis; */
         white-space: nowrap;
 

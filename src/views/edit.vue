@@ -1,22 +1,28 @@
 <template lang="">
     <div>
-        <div style="flex-direction: row; height: 80vh; display: flex;">
+        <div style="display: flex; flex-direction: row; max-height: 80vh;flex: 1">
        
             <div style="width: 45%; margin-top: 13vh;">
-
-                <el-upload multiple :limit="5" style="margin-bottom:20px" class="avatar-uploader" action="http://192.168.11.9:8082/bill/updateFile" :show-file-list="false"
-                :on-success="handleAvatarSuccess" >
+                <el-upload
+                    style="display: flex; justify-content: center; margin-bottom: 20px;"
+                    class="avatar-uploader"
+                    :action="getUploadUrl()"
+                    :before-upload="beforeUpload"
+                    :on-preview="handlePreview"
+                    :on-remove="handleRemove"
+                    :before-remove="beforeRemove"
+                    :on-success="handleAvatarSuccess"
+                    multiple
+                    :limit="5"
+                    :on-exceed="handleExceed"
+                    :file-list="fileList">
+                    <el-button size="small" type="primary">点击上传</el-button>
+                    <div slot="tip" class="el-upload__tip"></div>
+                </el-upload>
+                <el-upload multiple :limit="5" style="margin-bottom:20px" class="avatar-uploader" 
+                action="http://192.168.11.9:8082/bill/updateFile"  :show-file-list="false" :on-success="handleAvatarSuccess" > 
+                </el-upload>
                
-                <div v-if="bill.imageUrl">
-                    <!-- isPDF(bill.imageUrl) -->
-                    <embed v-if="false" :src="bill.imageUrl" type="application/pdf" width="48%" height="80%" style="position: absolute; top: 10%; left: 51%;">
-                    <!-- !isPDF(bill.imageUrl) -->
-                    <div  style="width: 40%; height: 80%; position: absolute; top: 10%; left: 55%; border-radius: 5px; display: flex; justify-content: center; align-items: center;">
-                        <img v-if="true"  :src="bill.imageUrl" style="max-width: 100%; max-height: 100%;">
-                    </div>
-                </div>
-              </el-upload>
-
               <!-- 上面是upload按钮 -->
                 <el-form ref="form" :model="bill" label-width="120px">
                     <el-form-item label="帳票No" v-if="rewriteFlag">
@@ -52,26 +58,24 @@
                 <el-button size="medium" type="primary" @click="create"
                     :disabled="setCreateBt">{{createBtText}}</el-button>
                 <el-button size="medium" type="warning" @click="cancel">キャンセル</el-button>
+            </div>        
+            <!--  -->
+            <div class="right-section">
+                <div style="max-width: 80%; margin: auto;">
+                    <el-carousel trigger="click" :autoplay="false" height="600px">
+                        <el-carousel-item v-for="(imageUrl, index) in updateFileList" :key="index" style="display: flex">
+                            <div >
+                                <el-image style="height: 600px;" :src="imageUrl"></el-image>
+                            </div>
+                        </el-carousel-item>
+                    </el-carousel>
+                </div>
             </div>
-            <el-upload
-                style="display: flex; justify-content: center; margin-bottom: 20px;"
-                class="avatar-uploader"
-                :action="getUploadUrl()"
-                :before-upload="beforeUpload"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
-                :before-remove="beforeRemove"
-                :on-success="handleAvatarSuccess"
-                multiple
-                :limit="5"
-                :on-exceed="handleExceed"
-                :file-list="fileList">
-                <el-button size="small" type="primary">点击上传</el-button>
-                <div slot="tip" class="el-upload__tip"></div>
-         
-            </el-upload>
+
+            <!--  -->
         </div>
     </div>
+    
 </template>
 
 <script>
@@ -111,6 +115,8 @@
                 updateFileList:[],
                 // updateuserid:'',暂时没用
                 deletingFile: null,
+                previewImageUrl: null,
+                dialogVisible: false,
 
             }
         },
@@ -296,6 +302,11 @@
             getUploadUrl() {
             return `http://192.168.11.9:8082/bill/updateFile?userid=${sessionStorage.getItem('userid')}`;
             },
+
+            showPreview(index) {
+                this.previewImageUrl = this.updateFileList[index];
+                this.dialogVisible = true;
+            },
   
         },
         watch: {
@@ -364,4 +375,24 @@
     .el-button {
         margin: 5px;
     }
+    .flex-container {
+        display: flex;
+        flex-direction: row;
+        /* height: 80vh; */
+    }
+
+    .left-section {
+        width: 45%;
+        margin-top: 13vh;
+    }
+
+    .right-section {
+        flex: 1;
+        margin-top: 13vh;
+    }
+
+    .el-carousel__container{
+        height: auto !important;
+    }
+
 </style>
