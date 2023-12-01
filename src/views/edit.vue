@@ -63,9 +63,9 @@
             <div class="right-section">
                 <div style="max-width: 80%; margin: auto;">
                     <el-carousel trigger="click" :autoplay="false" height="600px">
-                        <el-carousel-item v-for="(imageUrl, index) in updateFileList" :key="index" style="display: flex">
-                            <div >
-                                <el-image style="height: 600px;" :src="imageUrl"></el-image>
+                        <el-carousel-item v-for="(imageUrl, index) in updateFileList" :key="index">
+                            <div style="display:flow">
+                                <el-image style="height: 600px; margin: 0 auto;" :src="imageUrl"></el-image>
                             </div>
                         </el-carousel-item>
                     </el-carousel>
