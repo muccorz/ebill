@@ -66,6 +66,7 @@
                         <el-carousel-item v-for="(imageUrl, index) in updateFileList" :key="index">
                             <div style="display:flow">
                                 <el-image style="height: 600px; margin: 0 auto;" :src="imageUrl"></el-image>
+                                <div class="image-name">{{ getImageName(imageUrl) }}</div>
                             </div>
                         </el-carousel-item>
                     </el-carousel>
@@ -307,6 +308,15 @@
                 this.previewImageUrl = this.updateFileList[index];
                 this.dialogVisible = true;
             },
+            // 直接用后台给的imageUrl切出图片名
+            getImageName(imageUrl) {
+                const lastUnderscoreIndex = imageUrl.lastIndexOf('_');
+                if (lastUnderscoreIndex !== -1) {
+                    return imageUrl.slice(lastUnderscoreIndex + 1);
+                } else {
+                    return 'Unknown'; 
+                }
+            }
   
         },
         watch: {
@@ -394,5 +404,15 @@
     .el-carousel__container{
         height: auto !important;
     }
-
+    .image-name {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        padding: 8px;
+        text-align: center;
+        font-weight: bold;
+        box-sizing: border-box; /* Include padding and border in width/height */
+    }
 </style>
